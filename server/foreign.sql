@@ -1,0 +1,17 @@
+ALTER TABLE user_chat ADD FOREIGN KEY(user_id) REFERENCES user(user_id) ON DELETE CASCADE;
+
+ALTER TABLE user_chat ADD FOREIGN KEY(friend_id) REFERENCES user(user_id) ON DELETE SET NULL;
+
+ALTER TABLE user_chat ADD FOREIGN KEY(room_id) REFERENCES chat_room(room_id) ON DELETE CASCADE;
+
+ALTER TABLE message ADD FOREIGN KEY(room_id) REFERENCES chat_room(room_id) ON DELETE CASCADE;
+
+ALTER TABLE message ADD FOREIGN KEY(sender_id) REFERENCES user(user_id) ON DELETE SET NULL;
+
+ALTER TABLE movie ADD FOREIGN KEY(category_id) REFERENCES category(category_id) ON DELETE NO ACTION;
+
+ALTER TABLE profile ADD FOREIGN KEY(user_id) REFERENCES user(user_id) ON DELETE CASCADE;
+
+ALTER TABLE transaction ADD FOREIGN KEY(buyer_id) REFERENCES user(user_id) ON DELETE CASCADE;
+
+ALTER TABLE transaction ADD FOREIGN KEY(movie_id) REFERENCES movie(movie_id) ON DELETE SET NULL;
