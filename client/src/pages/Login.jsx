@@ -40,7 +40,6 @@ const Login = () => {
   
       const payload = res.data;
       const user = payload.data.user;
-      console.log(user)
       setUser(user);
     
     } catch(err){

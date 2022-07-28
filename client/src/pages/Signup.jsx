@@ -48,6 +48,7 @@ const Signup = () => {
      const payload = res.data;
      const user = payload.data.user;
      
+     
      setUser(user);
    
    } catch(err){

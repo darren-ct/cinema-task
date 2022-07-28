@@ -13,7 +13,7 @@ const getFavorites = async(req,res) => {
        try {
 
         const query = `
-     SELECT movie_id, title, thumbnail, price 
+     SELECT movie.movie_id, title, thumbnail, price 
      FROM favorite INNER JOIN movie
      ON favorite.movie_id = movie.movie_id 
      WHERE favorite.user_id = ${userId}
@@ -37,6 +37,7 @@ const getFavorites = async(req,res) => {
             }
           })
        } catch(err) {
+        console.log(err)
         return sendErr("Server error",res)
        }
 }

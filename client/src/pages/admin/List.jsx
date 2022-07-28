@@ -33,22 +33,22 @@ const List = () => {
     // Function
     const deleteRow = async(id) => {
 
-      // try {
-      //   await api.delete(`/movie/${id}`, {
-      //                  headers: {'Authorization':`Bearer ${token}`}
-      //                  }); 
+      try {
+        await api.delete(`/transaction/${id}`, {
+                       headers: {'Authorization':`Bearer ${token}`}
+                       }); 
 
-      //    getRows();
+         getRows();
 
 
-      // } catch(err) {
-      //   const payload = err.response.data;
-      //   const message = payload.message;
+      } catch(err) {
+        const payload = err.response.data;
+        const message = payload.message;
 
-      //   // navigate to error page
-      //   console.log(message)
+        // navigate to error page
+        console.log(message)
        
-      // };
+      };
 
 
     };
@@ -57,27 +57,28 @@ const List = () => {
         
       
 
-      // try {
+      try {
 
-      //   const res = await api.get("/movies", {
-      //     headers: {'Authorization':`Bearer ${token}`}
-      //     });
+        const res = await api.get("/alltransactions", {
+          headers: {'Authorization':`Bearer ${token}`}
+          });
 
-      //   // Extract data
-      //   const payload = res.data;
-      //   const movies = payload.data.movies;
+        // Extract data
+        const payload = res.data;
+        const transactions = payload.data;
 
-      //   setMovies(movies);
+        
+        setStatus(transactions);
        
 
-      // } catch (err) {
-      //   const payload = err.response.data;
-      //   const message = payload.message;
+      } catch (err) {
+        const payload = err.response.data;
+        const message = payload.message;
 
-      //   // navigate to error page
-      //   console.log(message)
+        // navigate to error page
+        console.log(message)
         
-      // };
+      };
 
     }
 
@@ -108,7 +109,7 @@ const List = () => {
               <tbody>
                    {
                     status.map((status,index) => {
-                        return <StatusRow key={status.id} status={{...status,index}} navigate={navigate} setIsModal={setIsModal} setId={setIdToDelete} />
+                        return <StatusRow key={status.id} status={{...status,index}} setIsModal={setIsModal} setId={setIdToDelete} />
                     })
                    }
              </tbody>

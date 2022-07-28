@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const StyledDropdown = styled.div`
      position: absolute;
+     z-index: 1000;
      width: 295px;
      background-color: #0D0D0D;
 

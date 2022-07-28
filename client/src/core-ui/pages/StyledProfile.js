@@ -28,6 +28,7 @@ import styled from "styled-components";
         }
 
         p{
+            color: white;
             margin-top: 6px;
             margin-bottom: 28px;
             max-width: 355px;

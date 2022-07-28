@@ -1,6 +1,6 @@
 import React from 'react'
 
-import StyledUserChat from "../../core-ui/UserChat.style"
+import {StyledUserChat} from "../../core-ui/UserChat.style"
 import unknown from "../../assets/unknown.jpg"
 
 const UserChat = ({person,setActivePerson,setClickedPerson,clickedPerson}) => {

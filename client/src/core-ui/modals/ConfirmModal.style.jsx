@@ -15,12 +15,15 @@ justify-content: center;
 
 .modal-body{
     background-color: white;
-    padding: 32px;
+    padding: 64px;
+    border-radius: 12px;
 
     span {
         margin: 0 auto;
         text-align: center;
-        
+        color: black;
+        font-weight: bold;
+        font-size: 24px;
 
     }
 

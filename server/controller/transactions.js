@@ -10,6 +10,34 @@ const midTransClient = require("midtrans-client");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
+
+const getAllTransactions = async(req,res) => {
+    const query = `
+    SELECT transaction_id, title , username, status 
+    FROM transaction INNER JOIN movie 
+    ON transaction.movie_id = movie.movie_id 
+    INNER JOIN user
+    ON user.user_id = transaction.buyer_id
+    `
+
+   try {
+         const AllTransactions = await sequelize.query(
+            query , {type:QueryTypes.SELECT}
+         );
+
+         
+
+         return res.status(201).send({
+            status : "Success",
+            data : AllTransactions
+         })
+
+   } catch (err) {
+    console.log(err)
+          return sendErr("Server error",res)
+   }
+}
+
 const getTransactions = async(req,res) => {
     const userID = req.user.id;
 
@@ -52,15 +80,31 @@ const getTransactions = async(req,res) => {
       
 };
 
+const deleteTransaction = async(req,res) => {
+   const id = req.params.id;
+
+   try {
+      await Transaction.destroy({
+        where : {transaction_id:id}
+      });
+
+      return res.status(201).send({
+         status:"Success"
+      });
+
+
+   } catch(err) {
+
+    return sendErr("Server error",res)
+   }
+}
+
 const postTransaction = async(req,res) => {
     const userID = req.user.id;
     
-    const {idMovie,qty} = req.body;
+    const {idMovie} = req.body;
     
-    if(qty < 1){
-        return sendErr("Quantity must be greater than 0",res)
-    }
-
+    
 try{
 
     const movieBought = await Movie.findOne(
@@ -94,7 +138,7 @@ let snap = new midTransClient.Snap({
 let parameter = {
     transaction_details: {
         order_id: transaction.transaction_id,
-        gross_amount: 1
+        gross_amount: movieBought.price
     },
     credit_card:{
         secure : true
@@ -209,8 +253,8 @@ const sendEmail = async(status,transactionId) => {
     SELECT email , username , title ,price,status
     FROM transaction INNER JOIN user
     ON transaction.buyer_id = user.user_id AND transaction_id = ${transactionId}
-    INNER JOIN product 
-    ON transaction.product_id = product.product_id
+    INNER JOIN movie 
+    ON transaction.movie_id = movie.movie_id
     `
 
     
@@ -264,5 +308,5 @@ const sendEmail = async(status,transactionId) => {
 
 }
 
-module.exports = {notification,getTransactions,postTransaction};
+module.exports = {notification,getAllTransactions,getTransactions,postTransaction,deleteTransaction};
 

@@ -1,4 +1,4 @@
-import StyledChatBody from "../../core-ui/ChatBody.style"
+import {StyledChatBody} from "../../core-ui/ChatBody.style"
 import { AppContext } from "../../App";
 import { useContext } from "react";
 

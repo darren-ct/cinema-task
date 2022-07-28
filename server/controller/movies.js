@@ -1,6 +1,8 @@
 const Movie = require("../models/movie");
 const Category = require("../models/category");
-const Favorite = require("../models/favorite")
+const Favorite = require("../models/favorite");
+const Transaction = require("../models/transaction")
+
 
 const fs = require('fs');
 const path = require("path"); 
@@ -19,9 +21,13 @@ const getMovies = async(req,res) => {
     try{
 
         const query = `
-        SELECT user_id , link , movie.movie_id, title, thumbnail, price , description
+        SELECT user_id , link , movie.movie_id, title, thumbnail, price , description , category_name , status
         FROM favorite RIGHT JOIN movie
         ON favorite.movie_id = movie.movie_id AND favorite.user_id = ${userId}
+        LEFT JOIN category 
+        ON movie.category_id = category.category_id
+        LEFT JOIN transaction
+        ON transaction.movie_id = movie.movie_id AND transaction.buyer_id = ${userId}
         `
 
         const movies = await sequelize.query(query,{type:QueryTypes.SELECT});
@@ -37,15 +43,17 @@ const getMovies = async(req,res) => {
                         desc: movie.description,
                         price: movie.price,
                         link:movie.link,
-                        isFavorite: movie.user_id ? true : false
+                        isFavorite: movie.user_id ? true : false,
+                        category:movie.category_name,
+                        isBought : movie.status ? movie.status : false
                     }
                 })
             }
         })
 
     } catch(err) {
-        console.log(err)
-        return sendErr(err,res)
+
+        return sendErr("Server Error",res)
 
     }
     
@@ -53,11 +61,50 @@ const getMovies = async(req,res) => {
    
 };
 
+const getMyMovies = async(req,res) => {
+     const userID = req.user.id;
+
+     try {
+     const query = `
+     SELECT movie.movie_id, title, thumbnail, price , favorite.user_id
+     FROM movie INNER JOIN transaction
+     ON movie.movie_id = transaction.movie_id AND transaction.buyer_id = ${userID} AND transaction.status = 'success'
+     LEFT JOIN favorite 
+     ON movie.movie_id = favorite.movie_id
+     `;
+
+        const myMovies = await sequelize.query(query,{type:QueryTypes.SELECT});
+
+
+        return res.status(201).send({
+            status: "Success",
+            data : {
+                mymovies : myMovies.map(myMov => {
+                    return {
+                        id:myMov.movie_id,
+                        image : process.env.SERVER_URL + myMov.thumbnail,
+                        title:myMovies.title,
+                        price: myMov.price,
+                        isFavorite : myMov.user_id ? true : false
+                    }
+                })
+            }
+          })
+
+     } catch(err) {
+        console.log(err)
+        return sendErr("Server error",res)
+
+    }
+}
+
 const getMovie = async(req,res) => {
     const movieId = Number(req.params.id);
     const userId = req.user.id;
     try{
         const movie = await Movie.findByPk(movieId);
+
+        // check fav
         const favorite = await Favorite.findAll({
             where : {
             user_id : userId,
@@ -70,6 +117,20 @@ const getMovie = async(req,res) => {
             return sendErr("Product not found",res)
         };
 
+        // check bought or not
+
+        const transaction = await Transaction.findAll({
+            where : {
+                buyer_id : userId,
+                movie_id : movieId
+            },
+            attributes : ["status"]
+        });
+
+        const isBought = transaction.length === 0 ? false : transaction[0].status;
+
+
+       //check category
         const category = await Category.findByPk(movie.category_id);
 
         if(!category){
@@ -88,7 +149,8 @@ const getMovie = async(req,res) => {
                     price: movie.price,
                     link:movie.link,
                     category:category.category_name,
-                    isFavorite:isFavorite
+                    isFavorite:isFavorite,
+                    isBought : isBought
                 }
             }
         })
@@ -281,4 +343,4 @@ const deleteMovie = async(req,res) => {
     }
 };
 
-module.exports = {getMovies,getMovie,postMovie,editMovie,deleteMovie};
+module.exports = {getMovies,getMyMovies,getMovie,postMovie,editMovie,deleteMovie};

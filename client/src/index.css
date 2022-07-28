@@ -8,4 +8,20 @@
 body {
   background-color: #000000;
   font-size: 18px;
+  color: white;
 }
+
+.swiper {
+  width: 1081px;
+  height: 437px;
+  
+}
+
+button{
+  transition: 150ms ease;
+}
+
+button:hover{
+  transform: scale(1.1);
+}
+

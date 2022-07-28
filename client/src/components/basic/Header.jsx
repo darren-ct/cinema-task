@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { StyledHeader } from '../../core-ui/Header.style';
 import Dropdown from './Dropdown';
 
@@ -29,9 +29,9 @@ const userUrls = ["/myprofile","/mymovies","/myfavorites","/"]
 
 
 
-const Header = ({isAdmin,setToken}) => {
+const Header = ({isAdmin}) => {
 
-  const[modal,setModal] = useState(false)
+  const[modal,setModal] = useState(false);
 
 
   const navLinkStyles = ({isActive}) => {
@@ -48,6 +48,10 @@ const Header = ({isAdmin,setToken}) => {
          cursor: "pointer"
      }
   }
+
+  useEffect(()=>{
+    
+  },[])
  
 
   return (

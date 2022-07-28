@@ -28,12 +28,12 @@ object-fit: cover;
     height: 100%;
 
     b{
-        color: #F74D4D;
+        color: #CD2E71;
         word-break: break-all;
     }
 
     span{
-        color:#F74D4D;
+        color:#CD2E71;
         margin: 4px 0 8px 0;
         word-break: break-all;
     }
