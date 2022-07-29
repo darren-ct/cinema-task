@@ -10,29 +10,30 @@ import api from "../connection";
 
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
-const swiper = new Swiper(".swiper", {
-  direction : "horizontal",
-  loop : false,
-
-  pagination : {
-    el: ".swiper-pagination"
-  },
-
-  navigation: {
-    nextEl: '.swiper-button-next',
-    prevEl: '.swiper-button-prev',
-  },
-
-  // And if we need scrollbar
-  scrollbar: {
-    el: '.swiper-scrollbar',
-  },
-});
 
 
 
 const Home = () => {
   let navigate = useNavigate();
+  const swiper = new Swiper(".swiper", {
+    direction : "horizontal",
+    loop : false,
+  
+    pagination : {
+      el: ".swiper-pagination"
+    },
+  
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+  
+    // And if we need scrollbar
+    scrollbar: {
+      el: '.swiper-scrollbar',
+    },
+  });
+  
 
   const[movies,setMovies] = useState([]);
   const[isLoading,setIsLoading] = useState(false);
@@ -104,7 +105,7 @@ const Home = () => {
 
     <div className="swiper">
          <div className="swiper-wrapper">
-              {movies.slice(0,3).map(movie => <div className="swiper-slide" key={movie.id}><Board movie={movie}/></div>)}
+              {movies.slice(0,3).map(movie => <div className="swiper-slide" key={movie.id}><Board key={movie.id} movie={movie}/></div>)}
          </div>
 
          <div className="swiper-pagination"></div>

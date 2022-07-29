@@ -30,6 +30,7 @@ const MyMovie = () => {
 
 
 
+        console.log(movies)
         setMovies(movies);
        
 

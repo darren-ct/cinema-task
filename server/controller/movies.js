@@ -83,7 +83,7 @@ const getMyMovies = async(req,res) => {
                     return {
                         id:myMov.movie_id,
                         image : process.env.SERVER_URL + myMov.thumbnail,
-                        title:myMovies.title,
+                        title:myMov.title,
                         price: myMov.price,
                         isFavorite : myMov.user_id ? true : false
                     }

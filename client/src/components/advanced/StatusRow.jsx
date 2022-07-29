@@ -2,7 +2,7 @@ import Button from "../basic/Button";
 
 const StatusRow = ({status,setIsModal,setId}) => {
     const id = status.transaction_id;
-    const statusColor = status.status === "success" ? "green" : "failed" ? "red" : "yellow";
+    const statusColor = status.status === "success" ? "green" : "pending" ? "yellow" : "red";
   
     return (
       <tr className='table-body-rows'>

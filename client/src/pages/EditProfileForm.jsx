@@ -1,5 +1,6 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect,useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import App, {AppContext} from "../App"
 
 
 import {useForm} from "react-hook-form";
@@ -19,12 +20,13 @@ const schema = yup.object().shape({
   address : yup.string().min(3).required("Address is required")
 })
 
-const EditProfileForm = ({originalImg,setOriginalImg,token,preset,setErrMsg,id}) => {
+const EditProfileForm = ({originalImg,setOriginalImg,token,preset,setErrMsg}) => {
   
     const {register, handleSubmit,formState:{errors}} = useForm({
         resolver: yupResolver(schema),
         defaultValues: preset
       });
+    const {socket,user} = useContext(AppContext);
 
     const navigate = useNavigate();
    
@@ -69,6 +71,7 @@ const EditProfileForm = ({originalImg,setOriginalImg,token,preset,setErrMsg,id})
               headers: {'Authorization':`Bearer ${token}`}
               });
       
+              socket.emit("get_profile",{id:user.user_id})
               navigate("/myprofile");
             } catch (err) {
       

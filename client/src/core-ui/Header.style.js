@@ -33,6 +33,8 @@ export const StyledHeader = styled.header`
                border-style: solid;
                border-color: ${(props)=> props.modal? "#CD2E71":"transparent"};
                width: 48px;
+               height: 48px;
+               object-fit: cover;
                cursor: pointer
 
             };

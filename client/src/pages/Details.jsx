@@ -150,10 +150,11 @@ const Details = () => {
           <img src={movie.image} />
           <div className="right-section">
                 <span style={{display:"inline-block"}} className="movie-title">{movie.title}</span>
-                {!movie.isBought && <Button content="Buy Now" onPress={buyMovie} width="" styling="primary"/> }
-                {movie.isBought &&
+                {!movie.isBought || movie.isBought === "failed" && <Button content="Buy Now" onPress={buyMovie} width="" styling="primary"/> }
+                {movie.isBought === "success" ?
                 <iframe style={{marginTop:24}} src={`https://www.youtube.com/embed/${movie.link}`} width="500" height="380" frameBorder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-                allowFullScreen title="Embedded youtube"  ></iframe> }
+                allowFullScreen title="Embedded youtube"  ></iframe> : movie.isBought === "pending" ? 
+                <button className="finish-btn">Finish payment to watch movie</button> : ""}
 
                 <p className="category">
                   {movie.category}

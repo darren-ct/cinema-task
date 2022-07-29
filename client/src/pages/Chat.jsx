@@ -9,18 +9,17 @@ import ChatBody from "../components/advanced/ChatBody"
 import api from "../connection";
 import {pushError} from "../auth/index";
 import {AppContext} from "../App";
-import io from "socket.io-client";
 import Button from "../components/basic/Button"
 
 
-const socket = io.connect("http://localhost:5000");
+
 
 
 const Chat = () => {
  
   const messagesEndRef = useRef(null);
   const {id} = useParams();
-  const {token,user} = useContext(AppContext);
+  const {token,user,socket} = useContext(AppContext);
   const navigate = useNavigate()
 
 

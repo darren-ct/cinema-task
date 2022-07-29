@@ -32,6 +32,7 @@ import styled from "styled-components";
 
         .category{
             margin-top: 14px;
+            margin-bottom: 64px;
             color:#7E7E7E;
             font-size: 16px;
             font-weight: bold;
@@ -56,8 +57,24 @@ import styled from "styled-components";
         }
 
         button{
+            background-color: orange;
+            color: white;
+            font-weight: bold;
             margin-top: 24px;
+            appearance: none;
+            border: none;
+            padding: 12px 24px;
+
+            &:hover{
+                transform: scale(1);
+            }
         }
+
+        .finish-btn{
+            margin-top:12px ;
+        }
+
+
 
     }
  `

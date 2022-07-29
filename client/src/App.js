@@ -2,6 +2,8 @@ import {BrowserRouter,Route,Routes,Navigate} from "react-router-dom";
 import {useState,useEffect,createContext} from "react";
 import {QueryClient,QueryClientProvider} from "react-query";
 
+import io from "socket.io-client";
+
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
@@ -30,6 +32,8 @@ import ChatButton from "./components/basic/ChatButton";
 const queryClient = new QueryClient();
 export const AppContext = createContext(null);
 
+const socket = io.connect("http://localhost:5000");
+
 function App() {
 
   const[user,setUser] = useState(null);
@@ -53,7 +57,7 @@ function App() {
     },[user])
 
   return (
-    <AppContext.Provider value={{user,setUser,token,isAdmin}}>
+    <AppContext.Provider value={{user,setUser,token,isAdmin,socket}}>
     <QueryClientProvider client={queryClient}>
     <BrowserRouter>
            { user ? <Header isAdmin={isAdmin} setUser={setUser}/> : "" }

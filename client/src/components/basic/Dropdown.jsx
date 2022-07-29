@@ -12,7 +12,7 @@ const Dropdown = ({isShown,btns,images,urls,styling}) => {
        
        {btns.map((btn,index) => {
         return (
-          <div className='link'>
+          <div className='link' key={index}>
                 <img src={images[index]} />
                 <NavLink style={styling} to={urls[index]}>{btn}</NavLink>
           </div>

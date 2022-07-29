@@ -56,7 +56,7 @@ const Board = ({movie}) => {
   return (
     <StyledBoard>
         <img src={movie.image} />
-        <div className="title">{movie.title}</div>
+        <div className="board-title">{movie.title}</div>
         <div className="category">{movie.category}</div>
         <div className="price">Rp.{movie.price}</div>
         <div className="desc">{movie.desc}</div>

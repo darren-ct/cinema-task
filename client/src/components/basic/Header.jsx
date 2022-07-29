@@ -1,5 +1,7 @@
 import { NavLink } from 'react-router-dom';
-import { useState,useEffect } from 'react';
+import { useState,useEffect,useContext} from 'react';
+import { AppContext } from '../../App';
+import api from '../../connection';
 import { StyledHeader } from '../../core-ui/Header.style';
 import Dropdown from './Dropdown';
 
@@ -32,6 +34,8 @@ const userUrls = ["/myprofile","/mymovies","/myfavorites","/"]
 const Header = ({isAdmin}) => {
 
   const[modal,setModal] = useState(false);
+  const[image,setImage] = useState(null)
+  const {socket,user} = useContext(AppContext)
 
 
   const navLinkStyles = ({isActive}) => {
@@ -50,7 +54,15 @@ const Header = ({isAdmin}) => {
   }
 
   useEffect(()=>{
+    socket.on("profile_updated", (data)=>{
+        
+        setImage(data.image)
+    })
+  },[])
+
+  useEffect(()=>{
     
+    socket.emit("get_profile", {id:user.user_id})
   },[])
  
 
@@ -71,7 +83,7 @@ const Header = ({isAdmin}) => {
                              <NavLink style={navLinkStyles} to="/categories">Categories</NavLink> 
                              </>) }
 
-                <img src={unknown} className="profile" onClick={()=>{setModal(prev => !prev)}}/> 
+                <img src={image ? image :unknown} className="profile" onClick={()=>{setModal(prev => !prev)}}/> 
                 
                 <div className='triangle' ></div>
                 {isAdmin ? <Dropdown isShown={modal} btns={adminBtns} urls={adminUrls} images={adminImages} styling={navLinkStyles}/> 

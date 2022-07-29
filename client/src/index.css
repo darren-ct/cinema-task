@@ -14,7 +14,7 @@ body {
 .swiper {
   width: 1081px;
   height: 437px;
-  
+  margin-top: 64px;
 }
 
 button{

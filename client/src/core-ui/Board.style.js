@@ -15,10 +15,13 @@ export const StyledBoard = styled.div`
       height: 100%;
       padding: 40px 84px;
 
-      .title{
+      .board-title{
+        margin-top: 64px;
         font-size: 30px;
         text-align: left;
         margin-bottom: 24px;
+        color:#CD2E71;
+        font-weight: bold;
       }
 
       .category {
