@@ -100,8 +100,8 @@ const editCategory = async(req,res) => {
         return sendErr("Category name cannot be empty",res)
     };
 
-    if(!minimumChecker(name,4)){
-        return sendErr("Category name minimum 4 characters",res)
+    if(!minimumChecker(name,3)){
+        return sendErr("Category name minimum 3 characters",res)
     };
 
 

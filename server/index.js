@@ -4,11 +4,18 @@ const http = require("http");
 const {Server} = require("socket.io");
 
 
+
 require("dotenv").config();
 
 const Profile = require("./models/profile")
 const Chatroom = require("./models/chatroom");
 const Message = require("./models/message");
+
+const {sendErr} = require("./helper/other");
+const {QueryTypes} = require("sequelize");
+const {getMovies,getMovie} = require("./controller/movies")
+
+
 const {notification} = require("./controller/transactions")
 
 
@@ -42,6 +49,9 @@ app.use(express.urlencoded());
 app.use(express.json());
 app.use(express.static("uploads"));
 
+
+app.get("/movies", getMovies);
+app.get("/movie/:id", getMovie);
 
 app.use("/api/v1", require("./routes/auth"));
 app.post("/api/v1/notification",notification)

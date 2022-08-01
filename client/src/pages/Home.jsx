@@ -7,9 +7,11 @@ import Board from "../components/advanced/Board";
 import StyledHome from "../core-ui/pages/Home.style";
 import MovieCard from "../components/advanced/MovieCard";
 import api from "../connection";
+import { api2 } from "../connection";
 
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
+
 
 
 
@@ -39,12 +41,12 @@ const Home = () => {
   const[isLoading,setIsLoading] = useState(false);
 
   const[search,setSearch] = useState("");
-  const{token} = useContext(AppContext);
+  const{token,user} = useContext(AppContext);
 
   // Use Effect
   useEffect(()=>{
        getMovies()
-  },[search]); 
+  },[search,user]); 
 
   useEffect(()=>{
     const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
@@ -66,11 +68,15 @@ const Home = () => {
   const getMovies = async() => {
       setIsLoading(true);
 
-      try {
+      let res = null;
 
-        const res = await api.get("/movies", {
+      try {
+        if(!token){
+           res = await api2.get("/movies")
+        } else {
+           res = await api.get("/movies", {
           headers: {'Authorization':`Bearer ${token}`}
-          });
+          }); }
 
         
         // Extract data

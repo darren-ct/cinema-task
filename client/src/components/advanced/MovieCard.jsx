@@ -40,9 +40,10 @@ const MovieCard = ({movie,navigate,getMovies,token}) => {
           <img src={movie.image} />
           <span>{movie.title}</span>
           <p>Rp {movie.price}</p>
+          { token &&
            <img onClick={setFavorite} src={movie.isFavorite ? liked : unliked} 
-           style={{height:28,width:28,position:"absolute",bottom:48,right:18}} />
-          </div>
+           style={{height:28,width:28,position:"absolute",bottom:48,right:18}} /> }
+          </div> 
     </StyledMovieCard>
   )
 }

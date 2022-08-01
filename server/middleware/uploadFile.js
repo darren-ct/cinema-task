@@ -44,12 +44,6 @@ exports.uploadFile = (imageFile) => {
                  return res.status(400).send(req.fileValidationError)
             };
 
-            if(!req.file && !err){
-                return res.status(400).send({
-                    message: "Please select files to upload",
-                });
-            };
-
             if(err){
                 if(err.code === "LIMIT_FILE_SIZE"){
                     return res.status(400).send({

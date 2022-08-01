@@ -1,14 +1,16 @@
 import React from 'react';
 import {AppContext} from "../../App"
 import { useContext } from 'react';
-import {NavLink} from "react-router-dom";
+import {NavLink,useNavigate} from "react-router-dom";
 import logout from "../../assets/logout.png";
 import { StyledDropdown } from '../../core-ui/Dropdown.style';
 
-const Dropdown = ({isShown,btns,images,urls,styling}) => {
-  const {setUser} = useContext(AppContext)
+const Dropdown = ({isShown,btns,images,urls,styling,setModal}) => {
+  const {setUser} = useContext(AppContext);
+  const navigate = useNavigate();
+
   return (
-    <StyledDropdown isShown={isShown}>
+    <StyledDropdown isShown={isShown} setModal={setModal}>
        
        {btns.map((btn,index) => {
         return (
@@ -20,7 +22,7 @@ const Dropdown = ({isShown,btns,images,urls,styling}) => {
        })}
        <div className='link logout'>
              <img src={logout} />
-             <p onClick={()=>{setUser(null);localStorage.removeItem("user")}}>Logout</p>
+             <p onClick={()=>{setUser(null);localStorage.removeItem("user");setModal(false);navigate("/")}}>Logout</p>
        </div>
     </StyledDropdown>
   )

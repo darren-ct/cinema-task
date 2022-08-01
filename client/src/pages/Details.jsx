@@ -5,6 +5,7 @@ import {AppContext} from "../App"
 import StyledDetail from "../core-ui/pages/StyledDetail.js";
 
 import api from "../connection"
+import { api2 } from "../connection";
 import Button from "../components/basic/Button";
 
 
@@ -48,10 +49,16 @@ const Details = () => {
   const getMovie = async() => {
 
     try {
+      let res = null;
 
-      const res = await api.get(`/movie/${id}`, {
+      if(!token){
+        res = await api2.get(`/movie/${id}`);
+      } else {
+       res = await api.get(`/movie/${id}`, {
         headers: {'Authorization':`Bearer ${token}`}
         });
+
+      }
 
       
       // Extract data
@@ -144,13 +151,15 @@ const Details = () => {
   }
   }
 
+  console.log(movie)
+
 
   return (
     <StyledDetail>
           <img src={movie.image} />
           <div className="right-section">
                 <span style={{display:"inline-block"}} className="movie-title">{movie.title}</span>
-                {!movie.isBought || movie.isBought === "failed" && <Button content="Buy Now" onPress={buyMovie} width="" styling="primary"/> }
+                {!token ? <Button content="Login To Purchase" styling="primary" onPress={()=>{navigate("/login")}}/> : (!movie.isBought || movie.isBought === "failed") && <Button content="Buy Now" onPress={buyMovie} width="" styling="primary"/> }
                 {movie.isBought === "success" ?
                 <iframe style={{marginTop:24}} src={`https://www.youtube.com/embed/${movie.link}`} width="500" height="380" frameBorder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
                 allowFullScreen title="Embedded youtube"  ></iframe> : movie.isBought === "pending" ? 
@@ -170,7 +179,7 @@ const Details = () => {
                 
 
                
-               { movie.isFavorite ? 
+               { !token ? "" : movie.isFavorite ? 
                <Button onPress={setFavorite} styling="secondary" width="full" content="Remove from favorites"/> : <Button onPress={setFavorite} styling="primary" width="full" content="Add to favorites"/> }
                
           </div>

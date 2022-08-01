@@ -16,12 +16,39 @@ require("dotenv").config();
 
 
 const getMovies = async(req,res) => {
+
+    // Kalau belum login
+    if(!req.user){
+          try {
+            const movies = await Movie.findAll();
+
+            return res.status(201).send({
+                status : "Success",
+                data : {
+                    movies : movies.map(movie => {
+                        return {
+                            id : movie.movie_id,
+                            image:process.env.SERVER_URL + movie.thumbnail,
+                            title:movie.title,
+                            desc: movie.description,
+                            price: movie.price,
+                        }
+                    })
+                }
+            })
+          } catch(err) {
+            return sendErr("Server error",res)
+          }
+    };
+
+
+    // Kalau udah login
     const userId = req.user.id;
 
     try{
 
         const query = `
-        SELECT user_id , link , movie.movie_id, title, thumbnail, price , description , category_name , status
+        SELECT user_id , movie.movie_id, title, thumbnail, price , description , category_name , status
         FROM favorite RIGHT JOIN movie
         ON favorite.movie_id = movie.movie_id AND favorite.user_id = ${userId}
         LEFT JOIN category 
@@ -42,7 +69,6 @@ const getMovies = async(req,res) => {
                         title:movie.title,
                         desc: movie.description,
                         price: movie.price,
-                        link:movie.link,
                         isFavorite: movie.user_id ? true : false,
                         category:movie.category_name,
                         isBought : movie.status ? movie.status : false
@@ -62,6 +88,7 @@ const getMovies = async(req,res) => {
 };
 
 const getMyMovies = async(req,res) => {
+
      const userID = req.user.id;
 
      try {
@@ -100,6 +127,44 @@ const getMyMovies = async(req,res) => {
 
 const getMovie = async(req,res) => {
     const movieId = Number(req.params.id);
+
+
+    // Kalau belum login
+    if(!req.user){
+        try {
+            const movie = await Movie.findOne({
+                where : {
+                    movie_id : movieId
+                }
+            });
+
+            const category = await Category.findOne({
+                where : {
+                    category_id : movie.category_id
+                }
+            })
+
+            return res.status(201).send({
+                status : "Success",
+                data : {
+                    movie : {
+                        id : movie.movie_id,
+                        image:process.env.SERVER_URL + movie.thumbnail,
+                        title:movie.title,
+                        desc:movie.description,
+                        price: movie.price,
+                        category : category.category_name
+                    }
+                }
+            });
+
+        } catch(err) {
+          return sendErr("Server error",res)
+        }
+      };
+
+
+    // Kalau sudah login
     const userId = req.user.id;
     try{
         const movie = await Movie.findByPk(movieId);
@@ -162,6 +227,11 @@ const getMovie = async(req,res) => {
 };
 
 const postMovie = async(req,res) => {
+    if(!req.file){
+        return sendErr("No image sent",res)
+    };
+
+
     const file = req.file.filename;
     const{title,desc,price,link,category} = req.body;
 
@@ -223,8 +293,7 @@ const postMovie = async(req,res) => {
 
 const editMovie = async(req,res) => {
     const movieID = req.params.id;
-    const file = req.file.filename;
-    
+
 
     const{title,desc,price,link,category} = req.body;
 
@@ -271,27 +340,46 @@ const editMovie = async(req,res) => {
             return sendErr("Category doesnt exist",res)
         };
 
-        
-        // delete old file
-        const oldImage = await Movie.findOne({
+        // Update
+        if(!req.file){
+
+            await Movie.update({
+                title:title,
+                price:price, 
+                description:desc, 
+                link : link,
+                category_id:categoryMatch.category_id,
+            },{
+                where : {
+                    movie_id : movieID,
+                }
+            });
+            
+        } else {
+            const file = req.file.filename;
+
+            // delete old file
+            const oldImage = await Movie.findOne({
             where :{movie_id : movieID},
             attributes : ["thumbnail"]
-        });
+            });
 
-        await Movie.update({
-            title:title, 
-            thumbnail:file,  
-            price:price, 
-            description:desc, 
-            link : link,
-            category_id:categoryMatch.category_id,
-        },{
-            where : {
-                movie_id : movieID,
-            }
-        });
-
-        fs.unlink(path.join(__dirname,"..","uploads",oldImage.thumbnail),(err)=>{console.log(err)});
+            await Movie.update({
+                title:title, 
+                thumbnail:file,  
+                price:price, 
+                description:desc, 
+                link : link,
+                category_id:categoryMatch.category_id,
+            },{
+                where : {
+                    movie_id : movieID,
+                }
+            });
+    
+            fs.unlink(path.join(__dirname,"..","uploads",oldImage.thumbnail),(err)=>{console.log(err)});
+    
+        }
 
         return res.status(201).send({
             status: "Success",

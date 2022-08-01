@@ -64,7 +64,7 @@ const EditCategory = () => {
        
 
         <b>Edit Category</b>
-      {  preValues ? <EditCategoryForm preValues={preValues} setErrMsg={setErrMsg}/> : <div>Loading...</div> }
+      {  preValues ? <EditCategoryForm preValues={preValues} setErrMsg={setErrMsg} id={id}/> : <div>Loading...</div> }
         
     </StyledFormCategory>
     </>

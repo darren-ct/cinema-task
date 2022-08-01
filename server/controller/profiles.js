@@ -64,10 +64,48 @@ const postProfile = async(req,res) => {
 
 const editProfile = async(req,res) => {
     const userID = req.user.id;
-    const file = req.file.filename;
     const{gender,phone,country,city,address} = req.body;
 
     try {
+
+        // Check format
+    if(!minimumChecker(gender,4)){
+        return sendErr("Gender minimum 4 characters",res)
+    };
+
+    if(!minimumChecker(country,4)){
+        return sendErr("Country minimum 4 characters",res)
+    };
+
+    if(!minimumChecker(city,4)){
+        return sendErr("City minimum 4 characters",res)
+    };
+
+    if(!minimumChecker(address,4)){
+        return sendErr("Address minimum 4 characters",res)
+    };
+
+    if(!minimumChecker(phone,8)){
+        return sendErr("Phone minimum 8 characters",res)
+    };
+
+       if(!req.file){
+
+        await Profile.update({
+            gender : gender,
+            phone : phone,
+            country : country,
+            city : city,
+            address : address
+       },{
+           where : {
+                user_id : userID
+           }
+       });
+
+
+        } else {
+        const file = req.file.filename;
 
         const oldProfileImage = await Profile.findOne({
             where : {user_id:userID},
@@ -89,7 +127,8 @@ const editProfile = async(req,res) => {
 
         if(oldProfileImage.profile_img){
             fs.unlink(path.join(__dirname,"..","uploads",oldProfileImage.profile_img),(err)=>{console.log(err)});
-        };
+        }; 
+    }
 
         return res.status(201).send({
             status : "Success"

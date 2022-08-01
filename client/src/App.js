@@ -40,6 +40,8 @@ function App() {
   const token = user ? user.token : null;
   const isAdmin = user ? user.isAdmin : null;
 
+  console.log(user)
+
   useEffect(()=>{
   //  get token first time
      const userInfo =  JSON.parse(localStorage.getItem("user"));
@@ -60,13 +62,13 @@ function App() {
     <AppContext.Provider value={{user,setUser,token,isAdmin,socket}}>
     <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-           { user ? <Header isAdmin={isAdmin} setUser={setUser}/> : "" }
+           <Header isAdmin={isAdmin} setUser={setUser} user={user} /> 
             <Routes>
             <Route path="/myprofile" element={!token ? <Navigate to="/signup"/> : <Profile/>} />
             <Route path="/editprofile" element={!token ? <Navigate to="/signup"/> : <EditProfile/>} />
 
-            <Route path="/" element={!token ? <Navigate to="/signup"/> : isAdmin ? <Navigate to="/movies"/> : <Home/>  }/>
-            <Route path="/detail/:id" element={!token ? <Navigate to="/signup"/> : isAdmin ? <Navigate to="/movies"/> : <Details/>  }/>
+            <Route path="/" element={!token ? <Home/> : isAdmin ? <Navigate to="/movies"/> : <Home/>  }/>
+            <Route path="/detail/:id" element={!token ? <Details/> : isAdmin ? <Navigate to="/movies"/> : <Details/>  }/>
             <Route path="/myfavorites" element={!token ? <Navigate to="/signup"/> : isAdmin ? <Navigate to="/movies"/> : <MyFav/>} />
             <Route path="/mymovies" element={!token ? <Navigate to="/signup"/> : isAdmin ? <Navigate to="/movies"/> : <MyMovie/>} />
 
@@ -86,7 +88,6 @@ function App() {
             
             <Route path="/chat/:id" element={!token? <Navigate to="/signup"/> : <Chat/>}/>
             <Route path="/searchuser" element={!token? <Navigate to="/signup"/> : <SearchUser/>}/>
-
 
             {/* <Route path="*" element={<NotFound/>} /> */}
             </Routes>

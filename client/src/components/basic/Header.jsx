@@ -1,7 +1,6 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useState,useEffect,useContext} from 'react';
 import { AppContext } from '../../App';
-import api from '../../connection';
 import { StyledHeader } from '../../core-ui/Header.style';
 import Dropdown from './Dropdown';
 
@@ -18,6 +17,7 @@ import favoriteList from "../../assets/favoritelist.png";
 import home from "../../assets/home.png";
 
 import profile from "../../assets/profile.png";
+import Button from './Button';
 
 
 
@@ -31,11 +31,12 @@ const userUrls = ["/myprofile","/mymovies","/myfavorites","/"]
 
 
 
-const Header = ({isAdmin}) => {
+const Header = ({isAdmin,user}) => {
 
+  const navigate = useNavigate();
   const[modal,setModal] = useState(false);
   const[image,setImage] = useState(null)
-  const {socket,user} = useContext(AppContext)
+  const {socket} = useContext(AppContext)
 
 
   const navLinkStyles = ({isActive}) => {
@@ -61,9 +62,9 @@ const Header = ({isAdmin}) => {
   },[])
 
   useEffect(()=>{
-    
-    socket.emit("get_profile", {id:user.user_id})
-  },[])
+    if(user){
+    socket.emit("get_profile", {id:user.user_id})}
+  },[user])
  
 
   return (
@@ -83,11 +84,18 @@ const Header = ({isAdmin}) => {
                              <NavLink style={navLinkStyles} to="/categories">Categories</NavLink> 
                              </>) }
 
-                <img src={image ? image :unknown} className="profile" onClick={()=>{setModal(prev => !prev)}}/> 
+                
+
+               {user ? <img src={image ? image :unknown} className="profile" onClick={()=>{setModal(prev => !prev)}}/> :
+                <>
+                  <Button content={"Login"} styling={"secondary"} onPress={()=>{navigate("/login")}}/>
+                  <Button content={"Register"} styling={"primary"} onPress={()=>{navigate("/signup")}}/>
+                </>
+               } 
                 
                 <div className='triangle' ></div>
-                {isAdmin ? <Dropdown isShown={modal} btns={adminBtns} urls={adminUrls} images={adminImages} styling={navLinkStyles}/> 
-                : !isAdmin ? <Dropdown isShown={modal} btns={userBtns} urls={userUrls} images={userImages} styling={navLinkStyles}/> 
+                {isAdmin ? <Dropdown isShown={modal} btns={adminBtns} urls={adminUrls} images={adminImages} styling={navLinkStyles} setModal={setModal}/> 
+                : !isAdmin ? <Dropdown isShown={modal} btns={userBtns} urls={userUrls} images={userImages} styling={navLinkStyles} setModal={setModal}/> 
                 : ""}
               
             </div>

@@ -18,7 +18,7 @@ const schema = yup.object().shape({
 })
 
 
-const EditCategoryForm = ({preValues,setErrMsg}) => {
+const EditCategoryForm = ({preValues,setErrMsg,id}) => {
     const navigate = useNavigate();
     const{token} = useContext(AppContext);
 
@@ -34,7 +34,7 @@ const EditCategoryForm = ({preValues,setErrMsg}) => {
         setErrMsg("")
        
         try {
-          const res = await api.post(`/category`, {
+          const res = await api.put(`/category/${id}`, {
             "name" : data.name
           }, {
             headers: {'Authorization':`Bearer ${token}`}
