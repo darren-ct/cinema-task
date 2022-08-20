@@ -9,10 +9,6 @@ const { Op } = require("sequelize");
 const {emailChecker,minimumChecker} = require("../helper/auth");
 const {sendErr} = require("../helper/other")
 
-require("dotenv").config();
-
-
-
 const registerUser = async(req,res) => {
 
 
