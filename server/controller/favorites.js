@@ -4,9 +4,6 @@ const {sendErr} = require("../helper/other")
 const {QueryTypes} = require("sequelize");
 const sequelize = require("../config/connect");
 
-require("dotenv").config();
-
-
 const getFavorites = async(req,res) => {
        const userId = req.user.id;
 
