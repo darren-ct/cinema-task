@@ -5,9 +5,6 @@ const {minimumChecker} = require("../helper/auth")
 const fs = require('fs');
 const path = require("path"); 
 
-require("dotenv").config();
-
-
 const getProfile = async(req,res) => {
     const userID = req.user.id;
     
