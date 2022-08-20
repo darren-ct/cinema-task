@@ -2,8 +2,6 @@ const {QueryTypes} = require("sequelize");
 const sequelize = require("../config/connect");
 const {sendErr} = require("../helper/other");
 
-require("dotenv").config();
-
 
 module.exports.getUser = async(req,res) => {
     const userID = req.user.id;
