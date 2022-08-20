@@ -13,7 +13,7 @@ cursor: pointer;
 
 transition: 150ms ease;
 
-img{
+.movie-img{
 width:100%;
 height: 312px;
 object-fit: cover;
