@@ -12,7 +12,6 @@ const { Op,QueryTypes } = require("sequelize");
 const {minimumChecker} = require("../helper/auth");
 const {sendErr} = require("../helper/other");
 
-require("dotenv").config();
 
 
 const getMovies = async(req,res) => {
