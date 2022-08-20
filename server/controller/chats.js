@@ -6,9 +6,6 @@ const {sendErr} = require("../helper/other")
 const sequelize = require("../config/connect")
 const { QueryTypes } = require('sequelize');
 
-require("dotenv").config();
-
-
 
 const getMessages = async(req,res) => {
      const roomID = req.params.id;
