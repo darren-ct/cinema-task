@@ -1,23 +1,82 @@
 const Movie = require("../models/movie");
 const Category = require("../models/category");
 const Favorite = require("../models/favorite");
-const Transaction = require("../models/transaction")
+const Transaction = require("../models/transaction");
+const User = require("../models/user")
 
 
 const fs = require('fs');
 const path = require("path"); 
+const jwt = require("jsonwebtoken");
 
 const sequelize = require("../config/connect");
 const { Op,QueryTypes } = require("sequelize");
 const {minimumChecker} = require("../helper/auth");
 const {sendErr} = require("../helper/other");
 
+const checkMoviesUser = async(req,res) => {
+    const bearer = req.headers.authorization;
+       
+       if(!bearer){
+              return getMovies(null,null,res)
+       };
 
+       const token = bearer.split(" ")[1];
+       
+       jwt.verify(token ,process.env.SECRET, async(err,decoded)=>{
+              if(err) return getMovies(null,null,res);
 
-const getMovies = async(req,res) => {
+              const userArr = await User.findAll({
+                     where: {
+                            user_id : decoded.id
+                     }
+              });
+
+              if(userArr.length === 0){
+                 return getMovies(null,null,res)
+              }
+
+              const user = userArr[0];
+
+              getMovies(user.user_id,user.isAdmin,res);
+
+       })
+}
+
+const checkMovieUser = async(req,res) => {
+    const bearer = req.headers.authorization;
+    const movieId = Number(req.params.id);
+
+    if(!bearer){
+           return getMovie(null,movieId,null,res)
+    };
+
+    const token = bearer.split(" ")[1];
+    
+    jwt.verify(token ,process.env.SECRET, async(err,decoded)=>{
+           if(err) return getMovie(null,movieId,null,res);
+
+           const userArr = await User.findAll({
+                  where: {
+                         user_id : decoded.id
+                  }
+           });
+
+           if(userArr.length === 0){
+              return getMovie(null,movieId,null,res)
+           }
+
+           const user = userArr[0];
+
+           getMovie(user.user_id,movieId,user.isAdmin,res);
+
+    })
+}
+
+const getMovies = async(id,isAdmin,res) => {
 
     // Kalau belum login
-    if(!req.user){
+    if(!id || isAdmin === "true"){
           try {
             const movies = await Movie.findAll();
 
@@ -31,6 +90,7 @@ const getMovies = async(req,res) => {
                             title:movie.title,
                             desc: movie.description,
                             price: movie.price,
+                            link : movie.link
                         }
                     })
                 }
@@ -40,20 +100,19 @@ const getMovies = async(req,res) => {
           }
     };
 
-
     // Kalau udah login
-    const userId = req.user.id;
+    
 
     try{
 
         const query = `
-        SELECT user_id , movie.movie_id, title, thumbnail, price , description , category_name , status
+        SELECT user_id , movie.movie_id, title, thumbnail, price , description , category_name , status , link
         FROM favorite RIGHT JOIN movie
-        ON favorite.movie_id = movie.movie_id AND favorite.user_id = ${userId}
+        ON favorite.movie_id = movie.movie_id AND favorite.user_id = ${id}
         LEFT JOIN category 
         ON movie.category_id = category.category_id
         LEFT JOIN transaction
-        ON transaction.movie_id = movie.movie_id AND transaction.buyer_id = ${userId}
+        ON transaction.movie_id = movie.movie_id AND transaction.buyer_id = ${id}
         `
 
         const movies = await sequelize.query(query,{type:QueryTypes.SELECT});
@@ -68,6 +127,7 @@ const getMovies = async(req,res) => {
                         title:movie.title,
                         desc: movie.description,
                         price: movie.price,
+                        link : movie.link,
                         isFavorite: movie.user_id ? true : false,
                         category:movie.category_name,
                         isBought : movie.status ? movie.status : false
@@ -84,6 +144,104 @@ const getMovies = async(req,res) => {
     
 
    
+};
+
+const getMovie = async(id,movieId,isAdmin,res) => {
+    // Kalau belum login
+    if(!id || isAdmin === "true"){
+        try {
+            const movie = await Movie.findOne({
+                where : {
+                    movie_id : movieId
+                }
+            });
+
+            const category = await Category.findOne({
+                where : {
+                    category_id : movie.category_id
+                }
+            })
+
+            return res.status(201).send({
+                status : "Success",
+                data : {
+                    movie : {
+                        id : movie.movie_id,
+                        image:process.env.SERVER_URL + movie.thumbnail,
+                        title:movie.title,
+                        desc:movie.description,
+                        price: movie.price,
+                        category : category.category_name
+                    }
+                }
+            });
+
+        } catch(err) {
+          return sendErr("Server error",res)
+        }
+      };
+
+    // Kalau sudah login
+    
+    try{
+        const movie = await Movie.findByPk(movieId);
+
+        if(!movie){
+            return sendErr("Product not found",res)
+        };
+
+        // check fav
+        const favorite = await Favorite.findAll({
+            where : {
+            user_id : id,
+            movie_id:movieId }
+        });
+
+        const isFavorite  = favorite.length === 0 ? false : true;
+
+        // check bought or not
+
+        const transaction = await Transaction.findAll({
+            where : {
+                buyer_id : id,
+                movie_id : movieId
+            },
+            attributes : ["status"]
+        });
+
+        const isBought = transaction.length === 0 ? false : transaction[0].status;
+
+
+       //check category
+        const category = await Category.findByPk(movie.category_id);
+
+        if(!category){
+            return sendErr("Category not found",res)
+        };
+
+
+        return res.status(201).send({
+            status:"Success",
+            data: {
+                movie : {
+                    id : movie.movie_id,
+                    image:process.env.SERVER_URL + movie.thumbnail,
+                    title:movie.title,
+                    desc:movie.description,
+                    price: movie.price,
+                    link:movie.link,
+                    category:category.category_name,
+                    isFavorite:isFavorite,
+                    isBought : isBought
+                }
+            }
+        })
+
+    } catch(err) {
+        console.log(err)
+        return sendErr("Server error",res)
+    }
+
 };
 
 const getMyMovies = async(req,res) => {
@@ -123,107 +281,6 @@ const getMyMovies = async(req,res) => {
 
     }
 }
-
-const getMovie = async(req,res) => {
-    const movieId = Number(req.params.id);
-
-
-    // Kalau belum login
-    if(!req.user){
-        try {
-            const movie = await Movie.findOne({
-                where : {
-                    movie_id : movieId
-                }
-            });
-
-            const category = await Category.findOne({
-                where : {
-                    category_id : movie.category_id
-                }
-            })
-
-            return res.status(201).send({
-                status : "Success",
-                data : {
-                    movie : {
-                        id : movie.movie_id,
-                        image:process.env.SERVER_URL + movie.thumbnail,
-                        title:movie.title,
-                        desc:movie.description,
-                        price: movie.price,
-                        category : category.category_name
-                    }
-                }
-            });
-
-        } catch(err) {
-          return sendErr("Server error",res)
-        }
-      };
-
-
-    // Kalau sudah login
-    const userId = req.user.id;
-    try{
-        const movie = await Movie.findByPk(movieId);
-
-        // check fav
-        const favorite = await Favorite.findAll({
-            where : {
-            user_id : userId,
-            movie_id:movieId }
-        });
-
-        const isFavorite  = favorite.length === 0 ? false : true;
-
-        if(!movie){
-            return sendErr("Product not found",res)
-        };
-
-        // check bought or not
-
-        const transaction = await Transaction.findAll({
-            where : {
-                buyer_id : userId,
-                movie_id : movieId
-            },
-            attributes : ["status"]
-        });
-
-        const isBought = transaction.length === 0 ? false : transaction[0].status;
-
-
-       //check category
-        const category = await Category.findByPk(movie.category_id);
-
-        if(!category){
-            return sendErr("Category not found",res)
-        };
-
-
-        return res.status(201).send({
-            status:"Success",
-            data: {
-                movie : {
-                    id : movie.movie_id,
-                    image:process.env.SERVER_URL + movie.thumbnail,
-                    title:movie.title,
-                    desc:movie.description,
-                    price: movie.price,
-                    link:movie.link,
-                    category:category.category_name,
-                    isFavorite:isFavorite,
-                    isBought : isBought
-                }
-            }
-        })
-
-    } catch(err) {
-        return sendErr("Server error",res)
-    }
-
-};
 
 const postMovie = async(req,res) => {
     if(!req.file){
@@ -430,4 +487,4 @@ const deleteMovie = async(req,res) => {
     }
 };
 
-module.exports = {getMovies,getMyMovies,getMovie,postMovie,editMovie,deleteMovie};
+module.exports = {checkMovieUser,checkMoviesUser,getMovies,getMyMovies,getMovie,postMovie,editMovie,deleteMovie};
