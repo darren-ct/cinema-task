@@ -58,7 +58,7 @@ const Board = ({movie}) => {
         <img src={movie.image} />
         <div className="board-title">{movie.title}</div>
         <div className="category">{movie.category}</div>
-        <div className="price">Rp.{movie.price}</div>
+        <div className="price">{movie.price}</div>
         <div className="desc">{movie.desc}</div>
 
         { movie.isBought || !token ? <Button content="See Details" styling="primary" onPress={()=>{navigate(`/detail/${movie.id}`)}}/>: <Button content="Buy Now" styling="primary" onPress={buyMovie}/>}
