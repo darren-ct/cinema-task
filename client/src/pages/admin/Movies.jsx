@@ -11,20 +11,19 @@ import ConfirmModal from "../../components/modals/ConfirmModal";
 import api from "../../connection";
 import Button from "../../components/basic/Button";
 
+import convertRupiah from 'rupiah-format';
+
 const Movies = () => {
     const navigate = useNavigate();
     const{token} = useContext(AppContext);
 
     const[movies,setMovies] = useState([]);
    
-
-
     const[isModal,setIsModal] = useState(false);
     const[idToDelete, setIdToDelete] = useState("");
 
     
     // Use Effect
-
     useEffect(()=>{
         getRows()
     },[])
@@ -65,7 +64,11 @@ const Movies = () => {
 
         // Extract data
         const payload = res.data;
-        const movies = payload.data.movies;
+        let movies = payload.data.movies;
+        
+        movies = movies.map(movie => {
+          return {...movie,price:convertRupiah.convert(movie.price)}
+        })
 
         setMovies(movies);
        
