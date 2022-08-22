@@ -40,8 +40,6 @@ function App() {
   const token = user ? user.token : null;
   const isAdmin = user ? user.isAdmin : null;
 
-  console.log(user)
-
   useEffect(()=>{
   //  get token first time
      const userInfo =  JSON.parse(localStorage.getItem("user"));
