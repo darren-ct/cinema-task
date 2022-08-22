@@ -5,7 +5,7 @@ import {AppContext} from "../App"
 import StyledDetail from "../core-ui/pages/StyledDetail.js";
 
 import api from "../connection"
-import { api2 } from "../connection";
+import convertRupiah from 'rupiah-format';
 import Button from "../components/basic/Button";
 
 
@@ -51,26 +51,16 @@ const Details = () => {
     try {
       let res = null;
 
-      if(!token){
-        res = await api2.get(`/movie/${id}`);
-      } else {
        res = await api.get(`/movie/${id}`, {
         headers: {'Authorization':`Bearer ${token}`}
         });
 
-      }
-
-      
       // Extract data
       const payload = res.data;
-      const movie = payload.data.movie;
-
-
-   
-
+      let movie = payload.data.movie;
+      movie =  {...movie,price : convertRupiah.convert(movie.price)};
       setMovie(movie);
       
-
     } catch (err) {
       const payload = err.response.data;
       const message = payload.message;
@@ -151,8 +141,6 @@ const Details = () => {
   }
   }
 
-  console.log(movie)
-
 
   return (
     <StyledDetail>
@@ -174,7 +162,7 @@ const Details = () => {
                 </p>
 
                 <div className="movie-details">
-                    <div className="price">Rp. {movie.price}</div>
+                    <div className="price">{movie.price}</div>
                 </div>
                 
 
