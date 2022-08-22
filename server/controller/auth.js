@@ -51,7 +51,7 @@ const registerUser = async(req,res) => {
             username: req.body.name,
             email:req.body.email,
             password: hashedPassword,
-            isAdmin : false
+            isAdmin : "false"
         });
 
         await Profile.create({
@@ -104,14 +104,11 @@ const loginUser = async(req,res) => {
         } 
     });
 
-    console.log(match.user_id)
 
     if(!match){
         return sendErr("Email not yet registered",res)
     };
 
-
-    
     // check input passwordnya
     const matchedPw = match.password;
     const isMatch = bcrypt.compareSync(password,matchedPw);
@@ -119,7 +116,6 @@ const loginUser = async(req,res) => {
     if(!isMatch){
         return sendErr("Wrong password",res)
     }
-
 
     // kasi token
     const token = jwt.sign({
@@ -162,3 +158,4 @@ const logoutUser = async(req,res) => {
 
 
 module.exports = {registerUser, loginUser, logoutUser};
+
