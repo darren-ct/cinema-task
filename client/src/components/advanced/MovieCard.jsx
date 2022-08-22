@@ -39,7 +39,7 @@ const MovieCard = ({movie,navigate,getMovies,token}) => {
           <div onClick={()=>{navigate(`/detail/${id}`)}} style={{position:"relative"}}>
           <img className="movie-img" src={movie.image} />
           <span>{movie.title}</span>
-          <p>Rp {movie.price}</p>
+          <p>{movie.price}</p>
           { token &&
            <img onClick={setFavorite} src={movie.isFavorite ? liked : unliked} 
            style={{height:28,width:28,position:"absolute",top:332,right:18}} /> }
