@@ -8,7 +8,7 @@ const MovieRow = ({movie,navigate,setIsModal,setId}) => {
                           <td>{movie.index + 1}</td>
                           <td><img src = {movie.image} style={{width:"40px"}}/></td>
                           <td>{movie.title}</td>
-                          <td>{movie.desc}</td>
+                          <td>{movie.desc.slice(0,12) + "...."}</td>
                           <td>{movie.price}</td>
                           <td>{movie.link}</td>
                           <td className='btn-group'>
