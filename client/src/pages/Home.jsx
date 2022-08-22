@@ -7,12 +7,10 @@ import Board from "../components/advanced/Board";
 import StyledHome from "../core-ui/pages/Home.style";
 import MovieCard from "../components/advanced/MovieCard";
 import api from "../connection";
-import { api2 } from "../connection";
 
+import convertRupiah from 'rupiah-format';
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
-
-
 
 
 const Home = () => {
@@ -71,17 +69,16 @@ const Home = () => {
       let res = null;
 
       try {
-        if(!token){
-           res = await api2.get("/movies")
-        } else {
+    
            res = await api.get("/movies", {
           headers: {'Authorization':`Bearer ${token}`}
-          }); }
+          }); 
 
         
         // Extract data
         const payload = res.data;
-        const movies = payload.data.movies;
+        let movies = payload.data.movies;
+        movies = movies.map(movie => {return {...movie,price : convertRupiah.convert(movie.price)}});
 
 
         // Sort Data
@@ -92,6 +89,7 @@ const Home = () => {
         setIsLoading(false)
 
       } catch (err) {
+        console.log(err)
         const payload = err.response.data;
         const message = payload.message;
 
