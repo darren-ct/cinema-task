@@ -11,9 +11,7 @@ const Profile = require("./models/profile")
 const Chatroom = require("./models/chatroom");
 const Message = require("./models/message");
 
-const {sendErr} = require("./helper/other");
-const {QueryTypes} = require("sequelize");
-const {getMovies,getMovie} = require("./controller/movies")
+const {checkMovieUser,checkMoviesUser} = require("./controller/movies")
 
 
 const {notification} = require("./controller/transactions")
@@ -50,8 +48,8 @@ app.use(express.json());
 app.use(express.static("uploads"));
 
 
-app.get("/movies", getMovies);
-app.get("/movie/:id", getMovie);
+app.get("/api/v1/movies", checkMoviesUser);
+app.get("/api/v1/movie/:id", checkMovieUser);
 
 app.use("/api/v1", require("./routes/auth"));
 app.post("/api/v1/notification",notification)
